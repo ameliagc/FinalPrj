@@ -38,7 +38,7 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 # Make cache file for Twitter data
-CACHE_FNAME = "twitter_and_movie_cache.json"
+CACHE_FNAME = "twitter_cache.json"
 
 # Set up caching process
 try:
@@ -55,7 +55,8 @@ def get_twitter_user_data(movie_title):
 	if unique_identifier in CACHE_DICTION:
 		twitter_results = CACHE_DICTION[unique_identifier]
 	else:
-		twitter_results = api.statuses_lookup(movie_title)
+		twitter_results = api.search(movie_title)
+		print(type(twitter_results))
 
 		CACHE_DICTION[unique_identifier] = twitter_results
 		
@@ -63,39 +64,65 @@ def get_twitter_user_data(movie_title):
 		f.write(json.dumps(CACHE_DICTION)) 
 		f.close()
 
-	tweets = [] 
-	for tweet in twitter_results:
-		tweets.append(tweet)
-	return tweets[:10]
+	return twitter_results
 
-twitter_data = get_twitter_user_data("Trainwreck movie")
+twitter_data = get_twitter_user_data("Inception")
+
+# Make cache file for OMDB data
+CACHE_FNAME2 = "omdb_cache.json"
+
+# Set up caching process
+try:
+	cache_file2 = open(CACHE_FNAME2,'r')
+	cache_contents2 = cache_file2.read()
+	CACHE_DICTION2 = json.loads(cache_contents2)
+except:
+	CACHE_DICTION2 = {}
 
 # Write function get_omdb data that takes in a movie title and returns all of the data about the movie and caches the data if it hasn't been cached already
 # List of three movie titles to get data for
 movie_list = ["Inception", "Trainwreck", "Brooklyn"]
 
 def get_omdb_data(movie_list):
+	movie_info = []
 	for movie in movie_list:
 		unique_identifier = "omdb_{}".format(movie)
 
-		if unique_identifier in CACHE_DICTION:
-			omdb_results = CACHE_DICTION[unique_identifier]
+		if unique_identifier in CACHE_DICTION2:
+			omdb_results = CACHE_DICTION2[unique_identifier]
 		else:
-			for title in movie_list:
-				omdb_results = requests.get("http://www.omdbapi.com/?t="+title)
+			r = requests.get("http://www.omdbapi.com/?t="+movie)
+			omdb_results = r.text
 
-			CACHE_DICTION[unique_identifier] = omdb_results
+			movie_info.append(omdb_results)
+
+			CACHE_DICTION2[unique_identifier] = omdb_results
 		
-			f = open(CACHE_FNAME,'w')
-			f.write(json.dumps(CACHE_DICTION)) 
+			f = open(CACHE_FNAME2,'w')
+			f.write(json.dumps(CACHE_DICTION2)) 
 			f.close()
 
-		movie_info = []
-		for movie in omdb_results:
-			movie_info.append(movie)
-		return movie_info
+	return movie_info
 
 movie_data = get_omdb_data(movie_list)
+
+# Connect to database
+conn = sqlite3.connect('twitter_data.db')
+cur = conn.cursor()
+
+cur.execute('DROP TABLE IF EXISTS Tweets')
+cur.execute('CREATE TABLE Tweets (tweet_id TEXT PRIMARY KEY, tweet_text TEXT)')
+
+statement = 'INSERT OR IGNORE INTO Tweets VALUES (?, ?)'
+
+for x in twitter_data["statuses"]:
+	tweet_id = x["id_str"]
+	tweet_text = x["text"]
+
+	cur.execute(statement, (tweet_id, tweet_text))
+
+conn.commit()
+
 
 # Define Movie class
 	# Constructor: accepts a movie dictionary
