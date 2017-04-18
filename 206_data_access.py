@@ -56,7 +56,6 @@ def get_twitter_user_data(movie_title):
 		twitter_results = CACHE_DICTION[unique_identifier]
 	else:
 		twitter_results = api.search(movie_title)
-		print(type(twitter_results))
 
 		CACHE_DICTION[unique_identifier] = twitter_results
 		
@@ -83,13 +82,14 @@ except:
 # List of three movie titles to get data for
 movie_list = ["Inception", "Trainwreck", "Brooklyn"]
 
+# Function that gets data from OMDB and puts it in cache file
 def get_omdb_data(movie_list):
 	movie_info = []
 	for movie in movie_list:
 		unique_identifier = "omdb_{}".format(movie)
 
 		if unique_identifier in CACHE_DICTION2:
-			omdb_results = CACHE_DICTION2[unique_identifier]
+			movie_info.append(CACHE_DICTION2[unique_identifier])
 		else:
 			r = requests.get("http://www.omdbapi.com/?t="+movie)
 			omdb_results = r.text
@@ -104,22 +104,40 @@ def get_omdb_data(movie_list):
 
 	return movie_info
 
+# Call get OMDB data function
 movie_data = get_omdb_data(movie_list)
 
 # Connect to database
-conn = sqlite3.connect('twitter_data.db')
+conn = sqlite3.connect('databases.db')
 cur = conn.cursor()
 
+# Make table to hold Twitter data with columns: tweet ID, text
 cur.execute('DROP TABLE IF EXISTS Tweets')
-cur.execute('CREATE TABLE Tweets (tweet_id TEXT PRIMARY KEY, tweet_text TEXT)')
+cur.execute('CREATE TABLE Tweets (tweet_id TEXT PRIMARY KEY, tweet_text TEXT, retweets INTEGER)')
 
-statement = 'INSERT OR IGNORE INTO Tweets VALUES (?, ?)'
+statement = 'INSERT OR IGNORE INTO Tweets VALUES (?, ?, ?)'
 
 for x in twitter_data["statuses"]:
 	tweet_id = x["id_str"]
 	tweet_text = x["text"]
+	retweets = x["retweet_count"]
 
-	cur.execute(statement, (tweet_id, tweet_text))
+	cur.execute(statement, (tweet_id, tweet_text, retweets))
+
+conn.commit()
+
+# Make table to hold OMDB data with columns: 
+cur.execute('DROP TABLE IF EXISTS OMDB')
+cur.execute('CREATE TABLE OMDB (title TEXT, director TEXT)')
+
+statement = 'INSERT OR IGNORE INTO OMDB VALUES (?, ?)'
+
+for x in movie_data:
+	x = json.loads(x)
+	title = x["Title"]
+	director = x["Director"]
+	
+	cur.execute(statement, (title, director))
 
 conn.commit()
 
