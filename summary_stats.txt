@@ -1,0 +1,56 @@
+Here are the summary stats for Tweets about the following movies:
+Inception, Trainwreck, and Brooklyn
+
+Do users who favorite more tweets get more favorites on their tweets?
+Number of tweets a user has favorited vs. Number of favorites a user got on a tweet:
+14928 vs. 0
+1548 vs. 0
+13331 vs. 1
+8981 vs. 0
+7126 vs. 2
+5 vs. 0
+286 vs. 0
+2116 vs. 1
+60913 vs. 2
+33 vs. 0
+403 vs. 0
+767 vs. 1
+178 vs. 0
+2249 vs. 0
+4745 vs. 0
+26472 vs. 0
+127 vs. 0
+10 vs. 0
+16987 vs. 1
+376 vs. 0
+7802 vs. 0
+15551 vs. 0
+7784 vs. 0
+1560 vs. 0
+390 vs. 0
+249 vs. 0
+0 vs. 0
+22 vs. 0
+34 vs. 0
+1685 vs. 1
+12262 vs. 1
+0 vs. 1
+43 vs. 1
+1 vs. 1
+1 vs. 1
+1484 vs. 1
+0 vs. 1
+612 vs. 1
+0 vs. 1
+101 vs. 1
+53 vs. 1
+13718 vs. 1
+0 vs. 1
+15 vs. 1
+0 vs. 1
+There appears to be no relationship between how many tweets a user favorites and how many favorites a user gets on their tweet.
+
+Which movie got the most total favorites on tweets that mentioned the movie?
+Inception: 7
+Trainwreck: 2
+Brooklyn: 15
