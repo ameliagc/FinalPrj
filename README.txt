@@ -65,11 +65,33 @@ Database Creation:
 		- screen_name: username of user
 		- favorites: number of tweets the user has favorited
 	- Movies table
-		- 
+		- movie_id: unique id to represent the movie
+		- title: title of the movie
+		- director: director of the movie
+		- language: languages in the movie
+		- actor: first actor in actor list in movie
 
+Data manipulation code:
+This code contains two queries. The first query accesses the number of tweets a user has favorited and how many favorites a user has gotten on a single tweet. This is useful because one can compare if there is a correlation between if favorting more tweets get you more favorites on one of your tweets. 
+The other query and lists manipulation collectively map each movie with the total number of favorites from tweets about that movie.
 
+Why did you choose this project:
+I chose this project because I enjoy the challenge of learning about APIs in order to store their data in databases and also be creative in how I want to access and use this data. 
 
-
-
+Line numbers for SI 206:
+Data gathering functions:
+	- 
+Class definitions:
+	- Movie class: line 272
+Where database is created:
+	- Tweets: line 155
+	- Users: line 208
+	- Movies: line 244
+Load data into database:
+	- Tweets: line 161
+	- Users: line 215
+	- Movies: line 248
+Data processing:
+	- Starts on line 293
 
 
